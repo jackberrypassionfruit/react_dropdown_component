@@ -1,70 +1,31 @@
-// import { ChevronDown } from "lucide-react";
-import React, { useContext, useState, useEffect, useRef, createContext } from 'react';
-// import { createUseStyles } from "react-jss";
 
-const usersArray = [
-  {
-    name: "Miguel",
-    imgUrl: "/assets/user-1.svg",
-    id: "M1",
-  },
-  {
-    name: "Jane",
-    imgUrl: "/assets/user-2.svg",
-    id: "J2",
-  },
-  {
-    name: "Paul",
-    imgUrl: "/assets/user-3.svg",
-    id: "P3",
-  },
-  {
-    name: "Abbey",
-    imgUrl: "/assets/user-4.svg",
-    id: "A4",
-  },
-  {
-    name: "Chad",
-    imgUrl: "/assets/user-5.svg",
-    id: "C5",
-  },
-  {
-    name: "Fiona",
-    imgUrl: "/assets/user-6.svg",
-    id: "F6",
-  },
-  {
-    name: "Andreas",
-    imgUrl: "/assets/user-7.svg",
-    id: "A7",
-  },
-  {
-    name: "Jane",
-    imgUrl: "/assets/user-8.svg",
-    id: "J8",
-  },
-];
+import React, { useState, useEffect, useRef, createContext } from 'react';
 
-const useClickOutside = (ref, handler) => {
-  // console.log(handler, ref);
-  useEffect(() => {
-    const listener = (event) => {
-      // Do nothing if clicking ref's element or descendent elements
-      if (!ref.current || ref.current.contains(event.target)) {
-        return;
-      }
+const UserAssignContext = createContext();
 
-      handler(event);
-    };
+const UserAssignDropdown = ({
+  children,
+  assignedList,
+  setAssignedList,
+  users,
+}) => {
+  const UserAssignDropdownRef = useRef(null);
+  const [ isDropdownOpen, setIsDropdownOpen ] = useState(false);
 
-    document.addEventListener("mousedown", listener);
-    document.addEventListener("touchstart", listener);
-
-    return () => {
-      document.removeEventListener("mousedown", listener);
-      document.removeEventListener("touchstart", listener);
-    };
-  }, [ref, handler]);
+  return (
+    <UserAssignContext.Provider
+      value={{
+        assignedList,
+        users,
+        UserAssignDropdownRef,
+        isDropdownOpen,
+        setIsDropdownOpen,
+        setAssignedList,
+      }}
+    >
+    <div ref={UserAssignDropdownRef}>{children}</div>
+    </UserAssignContext.Provider>
+  );
 };
 
 const Header = () => {
@@ -83,7 +44,7 @@ const Close = () => {
         >
         <span>Close</span>
         <span>
-            -
+            <FaXmark size={20} />
         </span>
         </div>
     );
@@ -124,7 +85,7 @@ const AssignedList = () => {
 
                 <span>{user.name}</span>
                 <span className="ml-auto cursor-pointer p-1 hover:bg-[#2b2c37] rounded-full">
-                -
+                <FaXmark />
                 </span>
             </div>
             ))}
@@ -156,7 +117,7 @@ const Item = ({ user }) => {
             className={`flex items-center gap-2 p-4 hover:bg-[#2b2c37] rounded transition-all duration-200 `}
             onClick={() => handleAssign(user)}
         >
-        {assignedList.includes(user) && '+'}
+        {assignedList.includes(user) && <FiCheck />}
 
         <img className="w-6 h-6 " src={user.imgUrl} alt={`${user.name} image`} />
         <span>{user.name}</span>
@@ -171,7 +132,7 @@ const Button = () => {
         className="  px-4 py-2 flex items-center justify-between w-full rounded border border-[#828FA340] hover:border-primary cursor-pointer relative "
         onClick={() => setIsDropdownOpen(true)}>
         <span className="block">
-            -
+            <FiChevronDown color="#635FC7" size={24} />
         </span>
 
         <UserAssignDropdown.List />
@@ -197,37 +158,6 @@ const ListContainer = ({ listStyles }) => {
     );
 };
 
-
-const UserAssignContext = createContext();
-const UserAssignDropdown = ({
-  children,
-  assignedList,
-  setAssignedList,
-  users,
-}) => {
-  const UserAssignDropdownRef = useRef(null);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  useClickOutside(UserAssignDropdownRef, () => {
-    setIsDropdownOpen(false);
-  });
-
-  return (
-    <UserAssignContext.Provider
-      value={{
-        assignedList,
-        users,
-        UserAssignDropdownRef,
-        isDropdownOpen,
-        setIsDropdownOpen,
-        setAssignedList,
-      }}>
-      <div ref={UserAssignDropdownRef}>{children}</div>
-    </UserAssignContext.Provider>
-  );
-};
-
-
 UserAssignDropdown.List = ListContainer;
 UserAssignDropdown.Item = Item;
 UserAssignDropdown.Header = Header;
@@ -235,23 +165,5 @@ UserAssignDropdown.Button = Button;
 UserAssignDropdown.AssignedList = AssignedList;
 UserAssignDropdown.Close = Close;
 
-export default function App() {
+export default UserAssignDropdown;
 
-  const [assignedList, setAssignedList] = useState([]);
-
-  return (
-    <div className="bg-[#2b2c37] h-[100dvh] text-white flex  p-20 gap-4 items-center flex-col">
-      <div className=" w-[400px] ">
-        <h1 className="text-2xl ">Compound Component Pattern</h1>
-        <UserAssignDropdown
-          assignedList={assignedList}
-          setAssignedList={setAssignedList}
-          users={usersArray}>
-          <UserAssignDropdown.Header />
-          <UserAssignDropdown.Button />
-          <UserAssignDropdown.AssignedList />
-        </UserAssignDropdown>
-      </div>
-    </div>
-  );
-}
