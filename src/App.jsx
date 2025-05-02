@@ -174,7 +174,7 @@ const Button = () => {
             -
         </span>
 
-        <UserAssignDropdown.List />
+        <ListContainer />
         </button>
     );
 };
@@ -186,11 +186,11 @@ const ListContainer = ({ listStyles }) => {
         isDropdownOpen && (
         <ul
             className={`absolute bottom-full translate-x-9  left-full translate-y-full rounded bg-[#20212c] w-max ${listStyles}`}>
-            <UserAssignDropdown.Close />
+            <Close />
             <div className="flex flex-col p-2">
-            {users?.map((user, index) => (
-                <UserAssignDropdown.Item key={index} user={user} />
-            ))}
+              {users?.map((user, index) => (
+                  <Item key={index} user={user} />
+              ))}
             </div>
         </ul>
         )
@@ -227,14 +227,6 @@ const UserAssignDropdown = ({
   );
 };
 
-
-UserAssignDropdown.List = ListContainer;
-UserAssignDropdown.Item = Item;
-UserAssignDropdown.Header = Header;
-UserAssignDropdown.Button = Button;
-UserAssignDropdown.AssignedList = AssignedList;
-UserAssignDropdown.Close = Close;
-
 export default function App() {
 
   const [assignedList, setAssignedList] = useState([]);
@@ -246,10 +238,11 @@ export default function App() {
         <UserAssignDropdown
           assignedList={assignedList}
           setAssignedList={setAssignedList}
-          users={usersArray}>
-          <UserAssignDropdown.Header />
-          <UserAssignDropdown.Button />
-          <UserAssignDropdown.AssignedList />
+          users={usersArray}
+        >
+          <Header />
+          <Button />
+          <AssignedList />
         </UserAssignDropdown>
       </div>
     </div>
